@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="main-heading">CSV File Generator</h1>
+        
+        <div class="tabs">
+            <button class="tab-button active" data-tab="upload">
+                <i class="fas fa-upload"></i> Upload
+            </button>
+            <button class="tab-button" data-tab="preview">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button class="tab-button" data-tab="generate">
+                <i class="fas fa-file-csv"></i> Generate
+            </button>
+        </div>
+
+        <div id="upload" class="tab-content active">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="inputCsv">Select CSV File:</label>
+                    <div id="dropZone" class="drop-zone">
+                        <input type="file" id="inputCsv" accept=".csv" hidden>
+                        <p>Drag & Drop your CSV file here or <span class="browse-link">browse</span></p>
+                    </div>
+                </div>
+            </div>
+            <div id="progress" class="progress-bar"></div>
+            <div id="messages"></div>
+        </div>
+
+        <div id="preview" class="tab-content">
+            <div class="preview-container">
+                <h2>Data Preview</h2>
+                <div id="previewContent">
+                    <div class="table-wrapper"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="generate" class="tab-content">
+            <div class="action-section">
+                <button id="generateBtn" class="action-button">
+                    <i class="fas fa-file-export"></i> Generate CSV Files
+                </button>
+                <div id="generatedFiles" class="generated-files">
+                    <h3>Generated Files</h3>
+                    <div class="files-list"></div>
+                </div>
+                <button id="downloadAllBtn" class="action-button">
+                    <i class="fas fa-download"></i> Download All as ZIP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="help-tooltip">
+        <i class="fas fa-question-circle"></i>
+        <span class="tooltip-text">
+            Upload a CSV file, preview the data, and generate individual CSV files for each unique value in the first column.
+        </span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

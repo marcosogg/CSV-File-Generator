@@ -1,0 +1,249 @@
+{
+  "companyCode": "GFIEUSD",
+  "templates": {
+    "purchasePoint": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "PurPoint": {
+          "type": "static",
+          "value": ""
+        },
+        "Name": {
+          "type": "static",
+          "value": ""
+        },
+        "Country": {
+          "type": "derived",
+          "source": "function:extractCountry"
+        },
+        "VendorNum": {
+          "type": "static",
+          "value": ""
+        },
+        "VendorNumVendorID": {
+          "type": "static",
+          "value": ""
+        },
+        "VendoPPLongEmail_c": {
+          "type": "static",
+          "source": ""
+        }
+      }
+    },
+    "refCategory": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "RefCategory": {
+          "type": "derived",
+          "source": "function:extractRefCategory"
+        },
+        "Description": {
+          "type": "derived",
+          "source": "function:generateRefCategoryDescription"
+        }
+      }
+    },
+    "part": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "PartNum": {
+          "type": "input",
+          "source": "Part"
+        },
+        "SearchWord": {
+          "type": "static",
+          "value": ""
+        },
+        "PartDescription": {
+          "type": "input",
+          "source": "Description"
+        },
+        "ClassID": {
+          "type": "derived",
+          "source": "function:deriveClassID"
+        },
+        "ProdCode": {
+          "type": "derived",
+          "source": "function:deriveProdCode"
+        },
+        "UserChar1": {
+          "type": "input",
+          "source": "Currency"
+        },
+        "UserDecimal1": {
+          "type": "input",
+          "source": "Unit price"
+        },
+        "TrackSerialNum": {
+          "type": "static",
+          "value": ""
+        },
+        "SNBaseDataType": {
+          "type": "static",
+          "value": "INTEGER"
+        },
+        "RefCategory": {
+          "type": "derived",
+          "source": "function:extractRefCategory"
+        },
+        "CheckBox01": {
+          "type": "static",
+          "value": "1.0"
+        },
+        "ShortChar01": {
+          "type": "derived",
+          "source": "function:extractShortChar01"
+        },
+        "PartCategory_c": {
+          "type": "static",
+          "value": "NP"
+        },
+        "SNNumODigits": {
+          "type": "static",
+          "value": "20.0"
+        }
+      }
+    },
+    "partPlant": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "PartNum": {
+          "type": "input",
+          "source": "Part"
+        },
+        "Plant": {
+          "type": "derived",
+          "source": "function:extractPlant"
+        },
+        "QtyTolerance": {
+          "type": "static",
+          "value": "10"
+        },
+        "OvSUOM": {
+          "type": "static",
+          "value": "EA"
+        },
+        "PricePer": {
+          "type": "static",
+          "value": "1"
+        },
+        "PurPointPart": {
+          "type": "static",
+          "value": ""
+        },
+        "PurPointPartNum": {
+          "type": "static",
+          "value": ""
+        }
+      }
+    },
+    "partWarehouse": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "PartNum": {
+          "type": "input",
+          "source": "Part"
+        },
+        "WarehouseCode": {
+          "type": "static",
+          "value": "WH1"
+        },
+        "MinimumQuantity": {
+          "type": "static",
+          "value": "0"
+        },
+        "MaximumQuantity": {
+          "type": "static",
+          "value": "0"
+        },
+        "SafetyQuantity": {
+          "type": "static",
+          "value": "0"
+        },
+        "WarehouseCodePartNum": {
+          "type": "input",
+          "source": "Part"
+        }
+      }
+    },
+    "partBin": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "PartNum": {
+          "type": "input",
+          "source": "Part"
+        },
+        "WarehouseCode": {
+          "type": "static",
+          "value": "WH1"
+        },
+        "BinNum": {
+          "type": "static",
+          "value": "BIN1"
+        },
+        "Quantity": {
+          "type": "static",
+          "value": "0"
+        },
+        "RowNum": {
+          "type": "static",
+          "value": "1"
+        },
+        "BinNumPartNum": {
+          "type": "input",
+          "source": "Part"
+        }
+      }
+    },
+    "supplierPricelist": {
+      "fields": {
+        "Company": {
+          "type": "static",
+          "value": "GFIEUSD"
+        },
+        "SupplierNum": {
+          "type": "input",
+          "source": "Supplier ID"
+        },
+        "SupplierPartNum": {
+          "type": "input",
+          "source": "Part"
+        },
+        "EffectiveDate": {
+          "type": "derived",
+          "source": "function:getCurrentDate"
+        },
+        "CurrencyCode": {
+          "type": "input",
+          "source": "Currency"
+        },
+        "UnitCost": {
+          "type": "input",
+          "source": "Unit price"
+        },
+        "UnitCostPer": {
+          "type": "static",
+          "value": "1"
+        }
+      }
+    }
+  }
+}
