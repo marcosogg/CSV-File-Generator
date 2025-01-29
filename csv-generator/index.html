@@ -114,31 +114,108 @@
             margin-right: 5px;
         }
 
-        #previewContainer {
-            margin-top: 20px;
-            display: none;
+        .hidden {
+            display: none !important;
         }
 
-        #previewTable {
+        #previewContainer {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+
+        .preview-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
         }
 
-        #previewTable th,
-        #previewTable td {
+        .preview-table th,
+        .preview-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
 
-        #previewTable th {
+        .preview-table th {
             background-color: #f2f2f2;
         }
 
-        #previewTable td:focus {
-            outline: none;
-            background-color: #e0f7fa;
+        .preview-table td[contenteditable="true"]:hover {
+            background-color: #f8f8f8;
+        }
+
+        .preview-table td[contenteditable="true"]:focus {
+            outline: 2px solid #007bff;
+            background-color: #fff;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 8px 16px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .tab-button.active {
+            background: #333;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .field-type {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        #csvPreviewContainer {
+            margin-top: 20px;
+        }
+
+        .csv-preview {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .csv-preview h3 {
+            margin-bottom: 10px;
+        }
+
+        .csv-preview table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .csv-preview table th,
+        .csv-preview table td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .csv-preview table th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
@@ -181,29 +258,20 @@
             </button>
         </form>
 
-        <div id="previewContainer">
+        <div id="previewContainer" class="hidden">
             <h3>Preview Data</h3>
-            <table id="previewTable">
-                <thead>
-                    <tr>
-                        <th>Part</th>
-                        <th>Supplier ID</th>
-                        <th>Description</th>
-                        <th>Currency</th>
-                        <th>Unit price</th>
-                        <th>Buyer</th>
-                        <th>Lead time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button id="confirmBtn" class="action-button">
-                <i class="fas fa-check"></i> Generate CSV Files
-            </button>
-            <button id="backBtn" class="action-button">
-                <i class="fas fa-arrow-left"></i> Back to Form
-            </button>
+            <div id="previewContent"></div>
+            <div style="margin-top: 20px;">
+                <button id="confirmBtn" class="action-button">
+                    <i class="fas fa-check"></i> Generate CSV Files
+                </button>
+                <button id="backBtn" class="action-button">
+                    <i class="fas fa-arrow-left"></i> Back to Form
+                </button>
+            </div>
+        </div>
+
+        <div id="csvPreviewContainer" class="hidden">
         </div>
 
         <div id="generatedFiles" class="generated-files" style="display: none;">
@@ -469,103 +537,215 @@
         };
         let generatedFiles = {};
         let formData = {};
+        let previewData = {};
 
         const dataForm = document.getElementById('dataForm');
         const previewContainer = document.getElementById('previewContainer');
-        const previewTable = document.getElementById('previewTable');
+        const previewContent = document.getElementById('previewContent');
         const confirmBtn = document.getElementById('confirmBtn');
         const backBtn = document.getElementById('backBtn');
         const generatedFilesSection = document.getElementById('generatedFiles');
         const filesContainer = document.querySelector('.files-list');
         const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const csvPreviewContainer = document.getElementById('csvPreviewContainer');
 
         dataForm.addEventListener('submit', handleFormSubmit);
-        previewTable.addEventListener('input', handleCellEdit);
         confirmBtn.addEventListener('click', handleConfirmClick);
         backBtn.addEventListener('click', handleBackClick);
         downloadAllBtn.addEventListener('click', downloadAllAsZip);
 
         function handleFormSubmit(event) {
             event.preventDefault();
-            console.log("handleFormSubmit called");
+            try {
+                const formElement = event.target;
+                const formDataObj = new FormData(formElement);
+                
+                formData = {};
+                for (let [key, value] of formDataObj.entries()) {
+                    formData[key] = value;
+                }
 
-            formData = Object.fromEntries(new FormData(dataForm).entries());
-            console.log("formData:", formData);
+                // Process the data through templates and show preview
+                previewData = processTemplates([formData]);
+                showProcessedDataPreview(previewData);
+                
+                formElement.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                csvPreviewContainer.classList.add('hidden');
+                generatedFilesSection.style.display = 'none';
 
-            populatePreviewTable(formData);
-
-            dataForm.style.display = 'none';
-            previewContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Error in handleFormSubmit:', error);
+            }
         }
 
-        function populatePreviewTable(data) {
-            try {
-                console.log("populatePreviewTable called with data:", data);
+        function showProcessedDataPreview(processedData) {
+            previewContent.innerHTML = '';
 
-                const tbody = previewTable.querySelector('tbody');
-                console.log("tbody:", tbody);
+            // Create tabs container
+            const tabsContainer = document.createElement('div');
+            tabsContainer.className = 'tabs-container';
+            
+            // Create content container
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'content-container';
 
-                tbody.innerHTML = '';
-                const row = document.createElement('tr');
-                console.log("row:", row);
+            // Create tabs and content for each template
+            Object.entries(processedData).forEach(([templateName, data], index) => {
+                // Create tab
+                const tab = document.createElement('button');
+                tab.className = 'tab-button' + (index === 0 ? ' active' : '');
+                tab.textContent = templateName;
+                tab.onclick = () => switchTab(templateName);
+                tabsContainer.appendChild(tab);
 
-                for (const key in data) {
-                    const cell = document.createElement('td');
-                    cell.textContent = data[key];
-                    cell.setAttribute('contenteditable', true);
+                // Create content
+                const content = document.createElement('div');
+                content.className = 'tab-content' + (index === 0 ? ' active' : '');
+                content.id = `content-${templateName}`;
+                
+                // Create table
+                const table = createPreviewTable(data[0], templateName);
+                content.appendChild(table);
+                contentContainer.appendChild(content);
+            });
+
+            previewContent.appendChild(tabsContainer);
+            previewContent.appendChild(contentContainer);
+        }
+
+        function createPreviewTable(data, templateName) {
+            const table = document.createElement('table');
+            table.className = 'preview-table';
+
+            // Create header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            
+            Object.keys(data).forEach(key => {
+                const th = document.createElement('th');
+                const fieldConfig = config.templates[templateName].fields[key];
+                const fieldType = fieldConfig ? fieldConfig.type : 'unknown';
+                
+                th.innerHTML = `${key} <span class="field-type">(${fieldType})</span>`;
+                headerRow.appendChild(th);
+            });
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create body
+            const tbody = document.createElement('tbody');
+            const row = document.createElement('tr');
+            
+            Object.entries(data).forEach(([key, value]) => {
+                const cell = document.createElement('td');
+                cell.textContent = value;
+                
+                const fieldConfig = config.templates[templateName].fields[key];
+                const isEditable = fieldConfig && (fieldConfig.type === 'input' || fieldConfig.type === 'derived');
+                
+                if (isEditable) {
+                    cell.contentEditable = true;
                     cell.dataset.field = key;
-                    row.appendChild(cell);
-                    console.log("Appended cell for:", key, "with value:", data[key]);
+                    cell.dataset.template = templateName;
+                    cell.addEventListener('input', handleCellEdit);
                 }
-                tbody.appendChild(row);
-                console.log("Appended row to tbody");
-            } catch (error) {
-                console.error("Error in populatePreviewTable:", error);
-            }
+                
+                row.appendChild(cell);
+            });
+            
+            tbody.appendChild(row);
+            table.appendChild(tbody);
+
+            return table;
+        }
+
+        function switchTab(templateName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.textContent === templateName) {
+                    button.classList.add('active');
+                }
+            });
+
+            // Update content visibility
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `content-${templateName}`) {
+                    content.classList.add('active');
+                }
+            });
         }
 
         function handleCellEdit(event) {
             const cell = event.target;
             const field = cell.dataset.field;
-            formData[field] = cell.textContent;
+            const template = cell.dataset.template;
+            const value = cell.textContent;
+
+            // Update the preview data
+            if (!previewData[template]) {
+                previewData[template] = [];
+            }
+            if (!previewData[template][0]) {
+                previewData[template][0] = {};
+            }
+            previewData[template][0][field] = value;
         }
 
         function handleConfirmClick() {
-            const dataArray = [formData];
-            processTemplates(dataArray);
-            previewContainer.style.display = 'none';
+            generatedFiles = {};
+            
+            // Generate CSV files from preview data
+            for (const [templateName, templateData] of Object.entries(previewData)) {
+                const csvContent = Papa.unparse(templateData);
+                const filename = `${templateName}.csv`;
+                generatedFiles[filename] = csvContent;
+            }
+            
+            // Hide preview, show generated files
+            previewContainer.classList.add('hidden');
+            generatedFilesSection.style.display = 'block';
+            displayGeneratedFiles();
+            
+            // Scroll to the generated files section
+            generatedFilesSection.scrollIntoView({ behavior: 'smooth' });
         }
 
         function handleBackClick() {
-            previewContainer.style.display = 'none';
-            dataForm.style.display = 'block';
+            // Clear any generated files
+            generatedFiles = {};
+            previewData = {};
+            
+            // Reset UI state
+            previewContainer.classList.add('hidden');
+            generatedFilesSection.style.display = 'none';
+            dataForm.classList.remove('hidden');
+            
+            // Scroll back to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function processTemplates(data) {
-            const templates = Object.keys(config.templates).reduce((acc, key) => {
-                acc[key] = [];
-                return acc;
-            }, {});
-
+            const templates = {};
+            
             data.forEach(item => {
                 if (!validateRow(item)) {
                     console.warn('Invalid data in row:', item);
                     return;
                 }
+                
                 for (const [templateName, templateConfig] of Object.entries(config.templates)) {
+                    if (!templates[templateName]) {
+                        templates[templateName] = [];
+                    }
                     templates[templateName].push(processTemplate(templateName, templateConfig.fields, item));
                 }
             });
 
-            generatedFiles = {};
-            for (const [templateName, templateData] of Object.entries(templates)) {
-                const csvContent = Papa.unparse(templateData);
-                const filename = `${templateName}.csv`;
-                generatedFiles[filename] = csvContent;
-            }
-
-            generatedFilesSection.style.display = 'block';
-            displayGeneratedFiles();
+            return templates;
         }
 
         function processTemplate(templateName, fields, item) {
