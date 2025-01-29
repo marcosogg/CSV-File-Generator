@@ -1,3 +1,4 @@
+// script.js
 let config = {
   companyCode: 'GFIEUSD',
   templates: {
@@ -104,7 +105,7 @@ function init() {
       companyCodeInput.value = config.companyCode;
     }
   }
-  
+
   // Initially disable preview tab until data is processed
   const previewTabBtn = document.querySelector('[data-tab="preview"]');
   if (previewTabBtn) {
@@ -121,9 +122,11 @@ function addEventListeners() {
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('inputCsv');
   const tabButtons = document.querySelectorAll('.tab-button');
+  const addManualDataBtn = document.getElementById('addManualDataBtn');
 
   if (generateBtn) generateBtn.addEventListener('click', generateCSVFiles);
-  if (downloadAllBtn) downloadAllBtn.addEventListener('click', downloadAllAsZip);
+  if (downloadAllBtn)
+    downloadAllBtn.addEventListener('click', downloadAllAsZip);
   if (companyCodeInput)
     companyCodeInput.addEventListener('change', updateCompanyCode);
 
@@ -137,9 +140,12 @@ function addEventListeners() {
     fileInput.addEventListener('change', handleFileSelect);
   }
 
-  tabButtons.forEach(button => {
+  tabButtons.forEach((button) => {
     button.addEventListener('click', switchTab);
   });
+
+  if (addManualDataBtn)
+    addManualDataBtn.addEventListener('click', handleManualData);
 }
 
 // Handle drag over event
@@ -169,17 +175,17 @@ function handleFileSelect(event) {
 // Switch between tabs
 function switchTab(event) {
   const targetTab = event.currentTarget.getAttribute('data-tab');
-  
+
   // If switching to preview tab, show the preview
   if (targetTab === 'preview') {
     showPreview();
     return;
   }
-  
-  document.querySelectorAll('.tab-content').forEach(content => {
+
+  document.querySelectorAll('.tab-content').forEach((content) => {
     content.classList.remove('active');
   });
-  document.querySelectorAll('.tab-button').forEach(button => {
+  document.querySelectorAll('.tab-button').forEach((button) => {
     button.classList.remove('active');
   });
   document.getElementById(targetTab).classList.add('active');
@@ -322,10 +328,10 @@ function showPreview() {
   previewContainer.innerHTML = '';
 
   // Switch to preview tab and update active states
-  document.querySelectorAll('.tab-content').forEach(content => {
+  document.querySelectorAll('.tab-content').forEach((content) => {
     content.classList.remove('active');
   });
-  document.querySelectorAll('.tab-button').forEach(button => {
+  document.querySelectorAll('.tab-button').forEach((button) => {
     button.classList.remove('active');
   });
   document.getElementById('preview').classList.add('active');
@@ -341,11 +347,11 @@ function showPreview() {
 
     const tableWrapper = document.createElement('div');
     tableWrapper.className = 'table-wrapper';
-    
+
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
-    
+
     // Create header row
     const headerRow = document.createElement('tr');
     Object.keys(data[0]).forEach((key) => {
@@ -381,7 +387,7 @@ function showPreview() {
       });
       tbody.appendChild(tr);
     });
-    
+
     table.appendChild(tbody);
     tableWrapper.appendChild(table);
     templatePreview.appendChild(tableWrapper);
@@ -465,7 +471,7 @@ function generateCSVFiles() {
     const csvContent = Papa.unparse(data);
     const filename = fileNameMapping[templateName] || `${templateName}.csv`;
     generatedFiles[filename] = csvContent;
-    
+
     const fileItem = createFileItem(csvContent, filename);
     filesContainer.appendChild(fileItem);
   }
@@ -533,6 +539,30 @@ function updateProgress(percentage) {
   if (progressBar) {
     progressBar.innerHTML = `<span class="progress-bar-fill" style="width: ${percentage}%;"></span>`;
   }
+}
+
+// New function to handle manual data input
+function handleManualData() {
+  const form = document.getElementById('manualInputForm');
+  const formData = new FormData(form);
+  const manualData = {};
+  formData.forEach((value, key) => {
+    manualData[key] = value;
+  });
+
+  if (Object.keys(manualData).length === 0) {
+    showMessage('Please fill in the form.');
+    return;
+  }
+
+  if (!validateRow(manualData)) {
+    showMessage('Invalid data in form. Please check the fields.');
+    return;
+  }
+
+  processTemplates([manualData]);
+  showMessage('Manual data added successfully.');
+  form.reset();
 }
 
 // Initialize the application when the DOM is fully loaded
