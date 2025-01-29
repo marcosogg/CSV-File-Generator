@@ -114,10 +114,6 @@
             margin-right: 5px;
         }
 
-        .hidden {
-            display: none;
-        }
-
         #previewContainer {
             margin-top: 20px;
             display: none;
@@ -498,8 +494,8 @@
 
             populatePreviewTable(formData);
 
-            dataForm.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
+            dataForm.style.display = 'none';
+            previewContainer.style.display = 'block';
         }
 
         function populatePreviewTable(data) {
@@ -537,12 +533,12 @@
         function handleConfirmClick() {
             const dataArray = [formData];
             processTemplates(dataArray);
-            previewContainer.classList.add('hidden');
+            previewContainer.style.display = 'none';
         }
 
         function handleBackClick() {
-            previewContainer.classList.add('hidden');
-            dataForm.classList.remove('hidden');
+            previewContainer.style.display = 'none';
+            dataForm.style.display = 'block';
         }
 
         function processTemplates(data) {
