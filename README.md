@@ -40,3 +40,4 @@ These libraries are loaded via CDN in the index.html file, so an internet connec
 
 The app uses a configuration object in the `script.js` file to define templates and field mappings. Modify this configuration to adjust the output CSV structure and content as needed.
 # CSV-File-Generator
+# CSV-File-Generator
