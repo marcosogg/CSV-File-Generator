@@ -6,74 +6,682 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .action-button {
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .action-button:hover {
+            background-color: #555;
+        }
+
+        .download-all {
+            margin-top: 10px;
+        }
+
+        .generated-files {
+            margin-top: 20px;
+        }
+
+        .generated-files h3 {
+            margin-bottom: 10px;
+        }
+
+        .files-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .files-list .file-item {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .files-list .file-item .download-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #333;
+            font-size: 1rem;
+            padding: 5px;
+        }
+
+        .files-list .file-item .download-button:hover {
+            color: #025aa5;
+        }
+
+        .files-list .file-item .download-button i {
+            margin-right: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #previewContainer {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #previewTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        #previewTable th,
+        #previewTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #previewTable th {
+            background-color: #f2f2f2;
+        }
+
+        #previewTable td:focus {
+            outline: none;
+            background-color: #e0f7fa;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="main-heading">CSV File Generator</h1>
+        <h1>CSV File Generator</h1>
 
-        <div class="tabs">
-            <button class="tab-button active" data-tab="upload">
-                <i class="fas fa-upload"></i> Upload
-            </button>
-            <button class="tab-button" data-tab="preview">
-                <i class="fas fa-eye"></i> Preview
-            </button>
-            <button class="tab-button" data-tab="generate">
-                <i class="fas fa-file-csv"></i> Generate
-            </button>
-        </div>
-
-        <div id="upload" class="tab-content active">
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="inputCsv">Select CSV File:</label>
-                    <div id="dropZone" class="drop-zone">
-                        <input type="file" id="inputCsv" accept=".csv" hidden>
-                        <p>Drag & Drop your CSV file here or <span class="browse-link">browse</span></p>
-                    </div>
-                </div>
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="part">Part</label>
+                <input type="text" id="part" name="Part" value="EC10-NINTENDO-CA-CAD-25" required>
             </div>
-            <div id="progress" class="progress-bar"></div>
-            <div id="messages"></div>
-        </div>
-
-        <div id="preview" class="tab-content">
-            <div class="preview-container">
-                <h2>Data Preview</h2>
-                <div id="previewContent">
-                    <div class="table-wrapper"></div>
-                </div>
+            <div class="form-group">
+                <label for="supplierId">Supplier ID</label>
+                <input type="text" id="supplierId" name="Supplier ID" value="BUYTAB02" required>
             </div>
-        </div>
-
-        <div id="generate" class="tab-content">
-            <div class="action-section">
-                <button id="generateBtn" class="action-button">
-                    <i class="fas fa-file-export"></i> Generate CSV Files
-                </button>
-                <div id="generatedFiles" class="generated-files">
-                    <h3>Generated Files</h3>
-                    <div class="files-list"></div>
-                </div>
-                <button id="downloadAllBtn" class="action-button">
-                    <i class="fas fa-download"></i> Download All as ZIP
-                </button>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="Description" value="Nintendo URL CAD 25" required>
             </div>
+            <div class="form-group">
+                <label for="currency">Currency</label>
+                <input type="text" id="currency" name="Currency" value="CAD" required>
+            </div>
+            <div class="form-group">
+                <label for="unitPrice">Unit price</label>
+                <input type="number" id="unitPrice" name="Unit price" step="0.01" value="25" required>
+            </div>
+            <div class="form-group">
+                <label for="buyer">Buyer</label>
+                <input type="text" id="buyer" name="Buyer" value="API Buyer">
+            </div>
+            <div class="form-group">
+                <label for="leadTime">Lead time</label>
+                <input type="number" id="leadTime" name="Lead time" value="1">
+            </div>
+            <button type="submit" class="action-button">
+                <i class="fas fa-file-export"></i> Preview Data
+            </button>
+        </form>
+
+        <div id="previewContainer">
+            <h3>Preview Data</h3>
+            <table id="previewTable">
+                <thead>
+                    <tr>
+                        <th>Part</th>
+                        <th>Supplier ID</th>
+                        <th>Description</th>
+                        <th>Currency</th>
+                        <th>Unit price</th>
+                        <th>Buyer</th>
+                        <th>Lead time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="confirmBtn" class="action-button">
+                <i class="fas fa-check"></i> Generate CSV Files
+            </button>
+            <button id="backBtn" class="action-button">
+                <i class="fas fa-arrow-left"></i> Back to Form
+            </button>
         </div>
 
-        <div class="help-tooltip">
-            <i class="fas fa-question-circle"></i>
-            <span class="tooltip-text">
-                Upload a CSV file, preview the data, and generate individual CSV files for each unique value in the
-                first column.
-            </span>
+        <div id="generatedFiles" class="generated-files" style="display: none;">
+            <h3>Generated Files</h3>
+            <div class="files-list"></div>
+            <button id="downloadAllBtn" class="action-button download-all">
+                <i class="fas fa-download"></i> Download All as ZIP
+            </button>
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        let config = {
+            "companyCode": "GFIEUSD",
+            "templates": {
+                "purchasePoint": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "PurPoint": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "Name": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "Country": {
+                            "type": "derived",
+                            "source": "function:extractCountry"
+                        },
+                        "VendorNum": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "VendorNumVendorID": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "VendoPPLongEmail_c": {
+                            "type": "static",
+                            "source": ""
+                        }
+                    }
+                },
+                "refCategory": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "RefCategory": {
+                            "type": "derived",
+                            "source": "function:extractRefCategory"
+                        },
+                        "Description": {
+                            "type": "derived",
+                            "source": "function:generateRefCategoryDescription"
+                        }
+                    }
+                },
+                "part": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "PartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        },
+                        "SearchWord": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "PartDescription": {
+                            "type": "input",
+                            "source": "Description"
+                        },
+                        "ClassID": {
+                            "type": "derived",
+                            "source": "function:deriveClassID"
+                        },
+                        "ProdCode": {
+                            "type": "derived",
+                            "source": "function:deriveProdCode"
+                        },
+                        "UserChar1": {
+                            "type": "input",
+                            "source": "Currency"
+                        },
+                        "UserDecimal1": {
+                            "type": "input",
+                            "source": "Unit price"
+                        },
+                        "TrackSerialNum": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "SNBaseDataType": {
+                            "type": "static",
+                            "value": "INTEGER"
+                        },
+                        "RefCategory": {
+                            "type": "derived",
+                            "source": "function:extractRefCategory"
+                        },
+                        "CheckBox01": {
+                            "type": "static",
+                            "value": "1.0"
+                        },
+                        "ShortChar01": {
+                            "type": "derived",
+                            "source": "function:extractShortChar01"
+                        },
+                        "PartCategory_c": {
+                            "type": "static",
+                            "value": "NP"
+                        },
+                        "SNNumODigits": {
+                            "type": "static",
+                            "value": "20.0"
+                        }
+                    }
+                },
+                "partPlant": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "PartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        },
+                        "Plant": {
+                            "type": "derived",
+                            "source": "function:extractPlant"
+                        },
+                        "QtyTolerance": {
+                            "type": "static",
+                            "value": "10"
+                        },
+                        "OvSUOM": {
+                            "type": "static",
+                            "value": "EA"
+                        },
+                        "PricePer": {
+                            "type": "static",
+                            "value": "1"
+                        },
+                        "PurPointPart": {
+                            "type": "static",
+                            "value": ""
+                        },
+                        "PurPointPartNum": {
+                            "type": "static",
+                            "value": ""
+                        }
+                    }
+                },
+                "partWarehouse": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "PartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        },
+                        "WarehouseCode": {
+                            "type": "static",
+                            "value": "WH1"
+                        },
+                        "MinimumQuantity": {
+                            "type": "static",
+                            "value": "0"
+                        },
+                        "MaximumQuantity": {
+                            "type": "static",
+                            "value": "0"
+                        },
+                        "SafetyQuantity": {
+                            "type": "static",
+                            "value": "0"
+                        },
+                        "WarehouseCodePartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        }
+                    }
+                },
+                "partBin": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "PartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        },
+                        "WarehouseCode": {
+                            "type": "static",
+                            "value": "WH1"
+                        },
+                        "BinNum": {
+                            "type": "static",
+                            "value": "BIN1"
+                        },
+                        "Quantity": {
+                            "type": "static",
+                            "value": "0"
+                        },
+                        "RowNum": {
+                            "type": "static",
+                            "value": "1"
+                        },
+                        "BinNumPartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        }
+                    }
+                },
+                "supplierPricelist": {
+                    "fields": {
+                        "Company": {
+                            "type": "static",
+                            "value": "GFIEUSD"
+                        },
+                        "SupplierNum": {
+                            "type": "input",
+                            "source": "Supplier ID"
+                        },
+                        "SupplierPartNum": {
+                            "type": "input",
+                            "source": "Part"
+                        },
+                        "EffectiveDate": {
+                            "type": "derived",
+                            "source": "function:getCurrentDate"
+                        },
+                        "CurrencyCode": {
+                            "type": "input",
+                            "source": "Currency"
+                        },
+                        "UnitCost": {
+                            "type": "input",
+                            "source": "Unit price"
+                        },
+                        "UnitCostPer": {
+                            "type": "static",
+                            "value": "1"
+                        }
+                    }
+                }
+            }
+        };
+        let generatedFiles = {};
+        let formData = {};
+
+        const dataForm = document.getElementById('dataForm');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewTable = document.getElementById('previewTable');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const backBtn = document.getElementById('backBtn');
+        const generatedFilesSection = document.getElementById('generatedFiles');
+        const filesContainer = document.querySelector('.files-list');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+
+        dataForm.addEventListener('submit', handleFormSubmit);
+        previewTable.addEventListener('input', handleCellEdit);
+        confirmBtn.addEventListener('click', handleConfirmClick);
+        backBtn.addEventListener('click', handleBackClick);
+        downloadAllBtn.addEventListener('click', downloadAllAsZip);
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            console.log("handleFormSubmit called");
+
+            formData = Object.fromEntries(new FormData(dataForm).entries());
+            console.log("formData:", formData);
+
+            populatePreviewTable(formData);
+
+            dataForm.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+
+        function populatePreviewTable(data) {
+            try {
+                console.log("populatePreviewTable called with data:", data);
+
+                const tbody = previewTable.querySelector('tbody');
+                console.log("tbody:", tbody);
+
+                tbody.innerHTML = '';
+                const row = document.createElement('tr');
+                console.log("row:", row);
+
+                for (const key in data) {
+                    const cell = document.createElement('td');
+                    cell.textContent = data[key];
+                    cell.setAttribute('contenteditable', true);
+                    cell.dataset.field = key;
+                    row.appendChild(cell);
+                    console.log("Appended cell for:", key, "with value:", data[key]);
+                }
+                tbody.appendChild(row);
+                console.log("Appended row to tbody");
+            } catch (error) {
+                console.error("Error in populatePreviewTable:", error);
+            }
+        }
+
+        function handleCellEdit(event) {
+            const cell = event.target;
+            const field = cell.dataset.field;
+            formData[field] = cell.textContent;
+        }
+
+        function handleConfirmClick() {
+            const dataArray = [formData];
+            processTemplates(dataArray);
+            previewContainer.classList.add('hidden');
+        }
+
+        function handleBackClick() {
+            previewContainer.classList.add('hidden');
+            dataForm.classList.remove('hidden');
+        }
+
+        function processTemplates(data) {
+            const templates = Object.keys(config.templates).reduce((acc, key) => {
+                acc[key] = [];
+                return acc;
+            }, {});
+
+            data.forEach(item => {
+                if (!validateRow(item)) {
+                    console.warn('Invalid data in row:', item);
+                    return;
+                }
+                for (const [templateName, templateConfig] of Object.entries(config.templates)) {
+                    templates[templateName].push(processTemplate(templateName, templateConfig.fields, item));
+                }
+            });
+
+            generatedFiles = {};
+            for (const [templateName, templateData] of Object.entries(templates)) {
+                const csvContent = Papa.unparse(templateData);
+                const filename = `${templateName}.csv`;
+                generatedFiles[filename] = csvContent;
+            }
+
+            generatedFilesSection.style.display = 'block';
+            displayGeneratedFiles();
+        }
+
+        function processTemplate(templateName, fields, item) {
+            const result = {};
+            for (const [fieldName, fieldConfig] of Object.entries(fields)) {
+                switch (fieldConfig.type) {
+                    case 'static':
+                        result[fieldName] = fieldConfig.value;
+                        break;
+                    case 'input':
+                        result[fieldName] = item[fieldConfig.source] || '';
+                        break;
+                    case 'derived':
+                        if (fieldConfig.source.startsWith('function:')) {
+                            const functionName = fieldConfig.source.split(':')[1];
+                            result[fieldName] = window[functionName](item);
+                        }
+                        break;
+                }
+            }
+            return result;
+        }
+
+        function validateRow(item) {
+            return item['Part'] && item['Supplier ID'] && item['Description'];
+        }
+
+        function extractCountry(item) {
+            const parts = item['Part'].split('-');
+            return parts[2] || '';
+        }
+
+        function extractPlant(item) {
+            const parts = item['Part'].split('-');
+            return parts[1] || '';
+        }
+
+        function extractRefCategory(item) {
+            return item['Part'].split('-')[0];
+        }
+
+        function generateRefCategoryDescription(item) {
+            return `${extractRefCategory(item)} Category`;
+        }
+
+        function deriveClassID(item) {
+            return item['Part'].startsWith('E') ? 'VTGC' : '';
+        }
+
+        function deriveProdCode(item) {
+            return item['Part'].startsWith('E') ? 'VIRTUAL' : '';
+        }
+
+        function extractShortChar01(item) {
+            return item['Part'].split('-')[0];
+        }
+
+        function getCurrentDate() {
+            const today = new Date();
+            return `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+        }
+
+        function displayGeneratedFiles() {
+            filesContainer.innerHTML = '';
+            for (const [filename, content] of Object.entries(generatedFiles)) {
+                const fileItem = createFileItem(content, filename);
+                filesContainer.appendChild(fileItem);
+            }
+        }
+
+        function createFileItem(content, filename) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+
+            const fileName = document.createElement('span');
+            fileName.className = 'file-name';
+            fileName.textContent = filename;
+
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'download-button';
+            downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
+            downloadButton.onclick = () => {
+                const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            };
+
+            fileItem.appendChild(fileName);
+            fileItem.appendChild(downloadButton);
+            return fileItem;
+        }
+
+        function downloadAllAsZip() {
+            const zip = new JSZip();
+            for (const [filename, content] of Object.entries(generatedFiles)) {
+                zip.file(filename, content);
+            }
+
+            zip.generateAsync({ type: 'blob' }).then(function (content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'generated_csv_files.zip';
+                link.click();
+            });
+        }
+    </script>
 </body>
 
 </html>
