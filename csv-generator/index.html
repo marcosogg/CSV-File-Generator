@@ -24,7 +24,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 90%;
-            max-width: 800px;
+            max-width: 1600px;
         }
 
         h1 {
@@ -187,35 +187,129 @@
             margin-left: 5px;
         }
 
-        #csvPreviewContainer {
+        /* Enhanced Table Styles */
+        #previewContainer {
             margin-top: 20px;
-        }
-
-        .csv-preview {
-            margin-bottom: 20px;
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 15px;
+            background-color: #fff;
             border-radius: 4px;
         }
 
-        .csv-preview h3 {
-            margin-bottom: 10px;
-        }
-
-        .csv-preview table {
+        .preview-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 10px;
+            table-layout: fixed;
+            /* Ensures equal column widths */
         }
 
-        .csv-preview table th,
-        .csv-preview table td {
+        .preview-table th,
+        .preview-table td {
             border: 1px solid #ddd;
-            padding: 5px;
+            padding: 8px;
             text-align: left;
+            font-size: 0.9rem;
+            /* Slightly smaller font size */
         }
 
-        .csv-preview table th {
+        .preview-table th {
             background-color: #f2f2f2;
+            color: #222;
+            /* Darker text color */
+            font-weight: 600;
+            /* Semi-bold font weight */
+        }
+
+        .preview-table td[contenteditable="true"]:hover {
+            background-color: #f8f8f8;
+        }
+
+        .preview-table td[contenteditable="true"]:focus {
+            outline: 2px solid #007bff;
+            background-color: #fff;
+        }
+
+        /* Field Type Styling */
+        .field-type {
+            font-size: 0.8em;
+            color: #666;
+            font-weight: normal;
+            /* Regular font weight */
+            margin-left: 5px;
+            display: block;
+            /* Place on its own line */
+        }
+
+        /* Tab Styling */
+        .tabs-container {
+            display: flex;
+            gap: 0;
+            /* Remove gap */
+            overflow-x: auto;
+            padding-bottom: 0;
+            /* Remove padding */
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            /* Add a bottom border */
+        }
+
+        .tab-button {
+            padding: 8px 16px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            /* Rounded top corners */
+            font-weight: 600;
+            /* Semi-bold font weight */
+            color: #222;
+            /* Darker text color */
+            white-space: nowrap;
+            /* Prevent text wrapping */
+        }
+
+        .tab-button.active {
+            background: #fff;
+            /* White background */
+            color: #007bff;
+            /* Blue text color */
+            border-bottom: 3px solid #007bff;
+            /* Blue bottom border */
+        }
+
+        /* Action Button Styling */
+        .action-button {
+            background-color: #007bff;
+            /* Blue background */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            width: auto;
+            /* Adjust width to content */
+            transition: background-color 0.2s;
+            /* Smooth transition */
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+            /* Darker blue on hover */
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            /* Align buttons to the right */
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -253,6 +347,10 @@
                 <label for="leadTime">Lead time</label>
                 <input type="number" id="leadTime" name="Lead time" value="1">
             </div>
+            <div class="form-group">
+                <label for="purchasePoint">Purchase Point</label>
+                <input type="text" id="purchasePoint" name="Purchase Point">
+            </div>
             <button type="submit" class="action-button">
                 <i class="fas fa-file-export"></i> Preview Data
             </button>
@@ -261,14 +359,14 @@
         <div id="previewContainer" class="hidden">
             <h3>Preview Data</h3>
             <div id="previewContent"></div>
-            <div style="margin-top: 20px;">
+            <!-- <div style="margin-top: 20px;">
                 <button id="confirmBtn" class="action-button">
                     <i class="fas fa-check"></i> Generate CSV Files
                 </button>
                 <button id="backBtn" class="action-button">
                     <i class="fas fa-arrow-left"></i> Back to Form
                 </button>
-            </div>
+            </div> -->
         </div>
 
         <div id="csvPreviewContainer" class="hidden">
@@ -296,12 +394,12 @@
                             "value": "GFIEUSD"
                         },
                         "PurPoint": {
-                            "type": "static",
-                            "value": ""
+                            "type": "input",
+                            "source": "Purchase Point"
                         },
                         "Name": {
                             "type": "static",
-                            "value": ""
+                            "value": "" // Keeping this as empty for now, as per our discussion
                         },
                         "Country": {
                             "type": "derived",
@@ -309,16 +407,13 @@
                         },
                         "VendorNum": {
                             "type": "static",
-                            "value": ""
+                            "value": "" // Keeping this as empty for now
                         },
                         "VendorNumVendorID": {
                             "type": "static",
-                            "value": ""
-                        },
-                        "VendoPPLongEmail_c": {
-                            "type": "static",
-                            "source": ""
+                            "value": "" // Keeping this as empty for now
                         }
+                        // Removed VendoPPLongEmail_c
                     }
                 },
                 "refCategory": {
@@ -349,7 +444,7 @@
                         },
                         "SearchWord": {
                             "type": "static",
-                            "value": ""
+                            "value": "" // Keeping this as empty for now
                         },
                         "PartDescription": {
                             "type": "input",
@@ -373,7 +468,7 @@
                         },
                         "TrackSerialNum": {
                             "type": "static",
-                            "value": ""
+                            "value": "" // Keeping this as empty for now
                         },
                         "SNBaseDataType": {
                             "type": "static",
@@ -407,34 +502,63 @@
                             "type": "static",
                             "value": "GFIEUSD"
                         },
-                        "PartNum": {
-                            "type": "input",
-                            "source": "Part"
-                        },
                         "Plant": {
                             "type": "derived",
                             "source": "function:extractPlant"
                         },
-                        "QtyTolerance": {
-                            "type": "static",
-                            "value": "10"
+                        "PartNum": {
+                            "type": "input",
+                            "source": "Part"
                         },
-                        "OvSUOM": {
+                        "MinimumQty": {
                             "type": "static",
-                            "value": "EA"
+                            "value": ""  // Placeholder - will need data population logic later
                         },
-                        "PricePer": {
+                        "SafetyQty": {
                             "type": "static",
-                            "value": "1"
+                            "value": ""  // Placeholder
                         },
-                        "PurPointPart": {
+                        "LeadTime": {
                             "type": "static",
-                            "value": ""
+                            "value": ""  // Placeholder
                         },
-                        "PurPointPartNum": {
+                        "PurPoint": {
+                            "type": "input",
+                            "source": "Purchase Point"
+                        },
+                        "MinMfgLotSize": {
                             "type": "static",
-                            "value": ""
+                            "value": ""  // Placeholder
+                        },
+                        "MfgLotMultiple": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "MaxMfgLotSize": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "DaysOfSupply": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "BuyerID": {
+                            "type": "input",
+                            "source": "Buyer"
+                        },
+                        "Number01": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "Number02": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "VendorNum": {
+                            "type": "input",
+                            "source": "Supplier ID"
                         }
+                        // Removed: QtyTolerance, OvSUOM, PricePer, PurPointPart, PurPointPartNum
                     }
                 },
                 "partWarehouse": {
@@ -451,22 +575,15 @@
                             "type": "static",
                             "value": "WH1"
                         },
-                        "MinimumQuantity": {
-                            "type": "static",
-                            "value": "0"
+                        "Plant": {
+                            "type": "derived",
+                            "source": "function:extractPlant"
                         },
-                        "MaximumQuantity": {
+                        "PrimBinNum": {
                             "type": "static",
-                            "value": "0"
-                        },
-                        "SafetyQuantity": {
-                            "type": "static",
-                            "value": "0"
-                        },
-                        "WarehouseCodePartNum": {
-                            "type": "input",
-                            "source": "Part"
+                            "value": ""  // Placeholder - will need data population logic later
                         }
+                        // Removed: MinimumQuantity, MaximumQuantity, SafetyQuantity, WarehouseCodePartNum
                     }
                 },
                 "partBin": {
@@ -487,18 +604,11 @@
                             "type": "static",
                             "value": "BIN1"
                         },
-                        "Quantity": {
-                            "type": "static",
-                            "value": "0"
-                        },
-                        "RowNum": {
-                            "type": "static",
-                            "value": "1"
-                        },
-                        "BinNumPartNum": {
-                            "type": "input",
-                            "source": "Part"
+                        "Plant": {
+                            "type": "derived",
+                            "source": "function:extractPlant"
                         }
+                        // Removed: Quantity, RowNum, BinNumPartNum
                     }
                 },
                 "supplierPricelist": {
@@ -507,29 +617,41 @@
                             "type": "static",
                             "value": "GFIEUSD"
                         },
-                        "SupplierNum": {
-                            "type": "input",
-                            "source": "Supplier ID"
-                        },
-                        "SupplierPartNum": {
+                        "PartNum": {
                             "type": "input",
                             "source": "Part"
+                        },
+                        "PUM": {
+                            "type": "static",
+                            "value": ""  // Placeholder
                         },
                         "EffectiveDate": {
                             "type": "derived",
                             "source": "function:getCurrentDate"
                         },
-                        "CurrencyCode": {
-                            "type": "input",
-                            "source": "Currency"
-                        },
-                        "UnitCost": {
+                        "BaseUnitPrice": {
                             "type": "input",
                             "source": "Unit price"
                         },
-                        "UnitCostPer": {
+                        "PrimaryVendor": {
                             "type": "static",
-                            "value": "1"
+                            "value": ""  // Placeholder
+                        },
+                        "VendorID": {
+                            "type": "input",
+                            "source": "Supplier ID"
+                        },
+                        "AprvSupplier": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "DefaultPUM": {
+                            "type": "static",
+                            "value": ""  // Placeholder
+                        },
+                        "LeadTime": {
+                            "type": "input",
+                            "source": "Lead time"
                         }
                     }
                 }
@@ -550,8 +672,8 @@
         const csvPreviewContainer = document.getElementById('csvPreviewContainer');
 
         dataForm.addEventListener('submit', handleFormSubmit);
-        confirmBtn.addEventListener('click', handleConfirmClick);
-        backBtn.addEventListener('click', handleBackClick);
+        //confirmBtn.addEventListener('click', handleConfirmClick);
+        //backBtn.addEventListener('click', handleBackClick);
         downloadAllBtn.addEventListener('click', downloadAllAsZip);
 
         function handleFormSubmit(event) {
@@ -559,7 +681,7 @@
             try {
                 const formElement = event.target;
                 const formDataObj = new FormData(formElement);
-                
+
                 formData = {};
                 for (let [key, value] of formDataObj.entries()) {
                     formData[key] = value;
@@ -568,7 +690,7 @@
                 // Process the data through templates and show preview
                 previewData = processTemplates([formData]);
                 showProcessedDataPreview(previewData);
-                
+
                 formElement.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
                 csvPreviewContainer.classList.add('hidden');
@@ -585,7 +707,7 @@
             // Create tabs container
             const tabsContainer = document.createElement('div');
             tabsContainer.className = 'tabs-container';
-            
+
             // Create content container
             const contentContainer = document.createElement('div');
             contentContainer.className = 'content-container';
@@ -603,7 +725,7 @@
                 const content = document.createElement('div');
                 content.className = 'tab-content' + (index === 0 ? ' active' : '');
                 content.id = `content-${templateName}`;
-                
+
                 // Create table
                 const table = createPreviewTable(data[0], templateName);
                 content.appendChild(table);
@@ -612,6 +734,27 @@
 
             previewContent.appendChild(tabsContainer);
             previewContent.appendChild(contentContainer);
+
+            // Add button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
+
+            // Create Confirm and Back buttons
+            const confirmBtn = document.createElement('button');
+            confirmBtn.id = 'confirmBtn';
+            confirmBtn.className = 'action-button';
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> Generate CSV Files';
+            confirmBtn.addEventListener('click', handleConfirmClick);
+
+            const backBtn = document.createElement('button');
+            backBtn.id = 'backBtn';
+            backBtn.className = 'action-button';
+            backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Form';
+            backBtn.addEventListener('click', handleBackClick);
+
+            buttonContainer.appendChild(confirmBtn);
+            buttonContainer.appendChild(backBtn);
+            previewContent.appendChild(buttonContainer);
         }
 
         function createPreviewTable(data, templateName) {
@@ -621,40 +764,41 @@
             // Create header
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            
+
             Object.keys(data).forEach(key => {
                 const th = document.createElement('th');
                 const fieldConfig = config.templates[templateName].fields[key];
                 const fieldType = fieldConfig ? fieldConfig.type : 'unknown';
-                
-                th.innerHTML = `${key} <span class="field-type">(${fieldType})</span>`;
+
+                // Display field type below the header
+                th.innerHTML = `${key}<br><span class="field-type">(${fieldType})</span>`;
                 headerRow.appendChild(th);
             });
-            
+
             thead.appendChild(headerRow);
             table.appendChild(thead);
 
             // Create body
             const tbody = document.createElement('tbody');
             const row = document.createElement('tr');
-            
+
             Object.entries(data).forEach(([key, value]) => {
                 const cell = document.createElement('td');
-                cell.textContent = value;
-                
+                cell.textContent = value || ''; // Ensure empty strings are displayed as empty cells
+
                 const fieldConfig = config.templates[templateName].fields[key];
                 const isEditable = fieldConfig && (fieldConfig.type === 'input' || fieldConfig.type === 'derived');
-                
+
                 if (isEditable) {
                     cell.contentEditable = true;
                     cell.dataset.field = key;
                     cell.dataset.template = templateName;
                     cell.addEventListener('input', handleCellEdit);
                 }
-                
+
                 row.appendChild(cell);
             });
-            
+
             tbody.appendChild(row);
             table.appendChild(tbody);
 
@@ -697,19 +841,19 @@
 
         function handleConfirmClick() {
             generatedFiles = {};
-            
+
             // Generate CSV files from preview data
             for (const [templateName, templateData] of Object.entries(previewData)) {
                 const csvContent = Papa.unparse(templateData);
                 const filename = `${templateName}.csv`;
                 generatedFiles[filename] = csvContent;
             }
-            
+
             // Hide preview, show generated files
             previewContainer.classList.add('hidden');
             generatedFilesSection.style.display = 'block';
             displayGeneratedFiles();
-            
+
             // Scroll to the generated files section
             generatedFilesSection.scrollIntoView({ behavior: 'smooth' });
         }
@@ -718,25 +862,25 @@
             // Clear any generated files
             generatedFiles = {};
             previewData = {};
-            
+
             // Reset UI state
             previewContainer.classList.add('hidden');
             generatedFilesSection.style.display = 'none';
             dataForm.classList.remove('hidden');
-            
+
             // Scroll back to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function processTemplates(data) {
             const templates = {};
-            
+
             data.forEach(item => {
                 if (!validateRow(item)) {
                     console.warn('Invalid data in row:', item);
                     return;
                 }
-                
+
                 for (const [templateName, templateConfig] of Object.entries(config.templates)) {
                     if (!templates[templateName]) {
                         templates[templateName] = [];
@@ -774,13 +918,11 @@
         }
 
         function extractCountry(item) {
-            const parts = item['Part'].split('-');
-            return parts[2] || '';
+            return (item['Part'] && item['Part'].split('-')[2]) || '';
         }
 
         function extractPlant(item) {
-            const parts = item['Part'].split('-');
-            return parts[1] || '';
+            return (item['Part'] && item['Part'].split('-')[1]) || '';
         }
 
         function extractRefCategory(item) {
@@ -858,6 +1000,7 @@
             });
         }
     </script>
+
 </body>
 
 </html>
